@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# Test script for SCC (Simple C Compiler)
+# Compiles test cases and verifies output matches GCC behavior
+
+(cd ..; make clean; make)
+SCC=../scc
+GCC=gcc
+total=0
+totalmax=0
+maxtime=10
+
+echo
+echo "========================================="
+echo "Testing SCC (Simple C Compiler)"
+echo "========================================="
+echo
+
+rm -f total.txt
+# Limit size of files to 500K
+ulimit -f 5000
+
+# Test driver function
+runtest() {
+  prog=$1
+  grade=$2
+  descr=$3
+  echo "Testing $prog.c: $descr"
+  
+  # Clean up previous test artifacts
+  rm -f $prog $prog.s $prog.scc $prog.gcc* $prog.out*
+  
+  # Compile with our compiler
+  echo "  Compiling with SCC..."
+  timeout $maxtime $SCC $prog.c
+  if [ $? -ne 0 ]; then
+    echo "  ❌ SCC compilation failed"
+    printf "%-15s %-36s %-3s\n" "$prog" "$descr" "FAIL" >> total.txt
+    return
+  fi
+  
+  # Assemble and link the generated assembly
+  $GCC -static -o $prog.scc $prog.s 2>/dev/null
+  if [ $? -ne 0 ]; then
+    echo "  ❌ Assembly/linking failed"
+    printf "%-15s %-36s %-3s\n" "$prog" "$descr" "FAIL" >> total.txt
+    return
+  fi
+  
+  # Compile with GCC for comparison
+  $GCC -o $prog.gcc $prog.c >& $prog.gcc.out
+  
+  # Run both versions and compare output
+  timeout $maxtime ./$prog.scc > $prog.out.scc 2>/dev/null
+  timeout $maxtime ./$prog.gcc > $prog.out.gcc 2>/dev/null
+  
+  diff $prog.out.scc $prog.out.gcc > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo "  ✅ Output matches GCC - PASSED"
+    printf "%-15s %-36s %-3s\n" "$prog" "$descr" "PASS" >> total.txt
+    total=`expr $total + $grade`
+  else
+    echo "  ❌ Output differs from GCC - FAILED"
+    printf "%-15s %-36s %-3s\n" "$prog" "$descr" "FAIL" >> total.txt
+  fi
+  
+  totalmax=`expr $totalmax + $grade`
+  echo
+}
+
+# Test suite - showcasing compiler features
+echo "Running comprehensive test suite..."
+echo
+
+runtest test1 1 "Basic Hello World program"
+runtest global 1 "Global variable support"
+runtest local 1 "Local variable scoping"
+runtest args 1 "Function argument passing"
+runtest return 1 "Return statement handling"
+runtest nested 1 "Nested function calls"
+runtest div 1 "Division operations"
+runtest expr 1 "Expression evaluation"
+runtest expr2 1 "Complex expressions with variables"
+runtest rel 1 "Relational operators (<, >, <=, >=)"
+runtest equal 1 "Equality operators (==, !=)"
+runtest and 1 "Logical AND operator"
+runtest or 1 "Logical OR operator"
+runtest if 1 "If statement conditionals"
+runtest while 1 "While loop constructs"
+runtest dowhile 1 "Do-while loop constructs"
+runtest for 1 "For loop constructs"
+runtest break 1 "Break statement in loops"
+runtest continue 1 "Continue statement in loops"
+runtest array 1 "Array declarations and access"
+runtest array2 1 "Multi-dimensional arrays"
+runtest sum 1 "Array summation algorithms"
+runtest max 1 "Array maximum finding"
+runtest bubblesort 1 "Bubble sort implementation"
+runtest quicksort 1 "Quicksort algorithm"
+runtest fact 1 "Recursive factorial function"
+runtest ampersand 1 "Address-of operator (&)"
+runtest char 1 "Character array access"
+runtest char2 1 "Character array assignment"
+runtest strlen 1 "String length computation"
+runtest quicksortstr 1 "String quicksort algorithm"
+runtest queens 1 "N-Queens backtracking solution"
+
+# Summary
+echo "========================================="
+echo "Test Results Summary"
+echo "========================================="
+cat total.txt
+echo "-----------------------------------------"
+echo "Tests passed: $total of $totalmax"
+echo "-----------------------------------------"
+
+# Clean up test artifacts but keep a few examples
+echo
+echo "Cleaning up test artifacts..."
+rm -f *.gcc *.scc *.gcc.out *.out.gcc *.out.scc
+
+# Keep a few .s files as examples of compiler output
+echo "Keeping example assembly files: fact.s, quicksort.s, if.s"
+find . -name "*.s" ! -name "fact.s" ! -name "quicksort.s" ! -name "if.s" -delete
+
+echo "Test complete!"

@@ -1,0 +1,1 @@
+# Compiler build artifacts scc lex.yy.c y.tab.c y.tab.h *.out *.o *.s tests/*.gcc tests/*.scc tests/total.txt

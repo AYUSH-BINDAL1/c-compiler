@@ -1,0 +1,32 @@
+test1           Basic Hello World program            PASS
+global          Global variable support              PASS
+local           Local variable scoping               PASS
+args            Function argument passing            PASS
+return          Return statement handling            PASS
+nested          Nested function calls                PASS
+div             Division operations                  PASS
+expr            Expression evaluation                PASS
+expr2           Complex expressions with variables   PASS
+rel             Relational operators (<, >, <=, >=)  PASS
+equal           Equality operators (==, !=)          PASS
+and             Logical AND operator                 PASS
+or              Logical OR operator                  PASS
+if              If statement conditionals            PASS
+while           While loop constructs                PASS
+dowhile         Do-while loop constructs             PASS
+for             For loop constructs                  PASS
+break           Break statement in loops             PASS
+continue        Continue statement in loops          PASS
+array           Array declarations and access        PASS
+array2          Multi-dimensional arrays             PASS
+sum             Array summation algorithms           PASS
+max             Array maximum finding                PASS
+bubblesort      Bubble sort implementation           PASS
+quicksort       Quicksort algorithm                  PASS
+fact            Recursive factorial function         PASS
+ampersand       Address-of operator (&)              PASS
+char            Character array access               PASS
+char2           Character array assignment           PASS
+strlen          String length computation            PASS
+quicksortstr    String quicksort algorithm           PASS
+queens          N-Queens backtracking solution       PASS
